@@ -9,13 +9,16 @@ import SwiftUI
 
 struct FakeStoreTapView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            ProductsView()
+                .tabItem{
+                    Label("Products", systemImage: "cart")
+                }
+            UsersView()
+                .tabItem {
+                    Label("Users", systemImage: "person")
+                }
         }
-        .padding()
     }
 }
 
