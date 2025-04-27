@@ -8,8 +8,29 @@
 import SwiftUI
 
 struct ProductsView: View {
+    let products = Product.mockProducts
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            ForEach(products) { product in
+                HStack(spacing: 16) {
+                    AsyncImage(url: URL(string: product.image))
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .cornerRadius(10)
+                        .clipShape(.rect(cornerRadius: 10))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(product.title)
+                        Text(product.description)
+                            .lineLimit(2)
+                            .foregroundStyle(.gray)
+                    }
+                    .font(.subheadline)
+                }
+                
+            }
+            
+        }
     }
 }
 
