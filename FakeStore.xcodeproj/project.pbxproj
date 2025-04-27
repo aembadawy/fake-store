@@ -30,11 +30,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0CEFB1172DBD45090074D5EB /* FakeStore */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = FakeStore;
-			sourceTree = "<group>";
-		};
 		0CEFB1282DBD450A0074D5EB /* FakeStoreTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FakeStoreTests;
@@ -43,6 +38,11 @@
 		0CEFB1322DBD450A0074D5EB /* FakeStoreUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FakeStoreUITests;
+			sourceTree = "<group>";
+		};
+		0CEFB1562DBE24330074D5EB /* FakeStore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FakeStore;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,7 +75,7 @@
 		0CEFB10C2DBD45080074D5EB = {
 			isa = PBXGroup;
 			children = (
-				0CEFB1172DBD45090074D5EB /* FakeStore */,
+				0CEFB1562DBE24330074D5EB /* FakeStore */,
 				0CEFB1282DBD450A0074D5EB /* FakeStoreTests */,
 				0CEFB1322DBD450A0074D5EB /* FakeStoreUITests */,
 				0CEFB1162DBD45090074D5EB /* Products */,
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0CEFB1172DBD45090074D5EB /* FakeStore */,
+				0CEFB1562DBE24330074D5EB /* FakeStore */,
 			);
 			name = FakeStore;
 			packageProductDependencies = (
