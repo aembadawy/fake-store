@@ -11,8 +11,18 @@ import Foundation
 class ProductsViewModel {
     
     var products = [Product]()
+    private let service: ProductService
     
-    init() {
+    init(service: ProductService = ProductService()) {
+        self.service = service
         self.products = Product.mockProducts
+    }
+    
+    func fetchProducts() async {
+        do {
+            self.products = try await self.service.fetchProducts()
+        } catch {
+            // handle error
+        }
     }
 }

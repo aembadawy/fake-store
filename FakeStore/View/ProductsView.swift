@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProductsView: View {
+    
     @State private var viewModel = ProductsViewModel()
     
     var body: some View {
@@ -31,6 +32,8 @@ struct ProductsView: View {
                 
             }
             
+        }.task {
+            await viewModel.fetchProducts()
         }
     }
 }

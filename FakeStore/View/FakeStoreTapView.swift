@@ -19,6 +19,7 @@ struct FakeStoreTapView: View {
                     Label("Users", systemImage: "person")
                 }
         }
+        .navigationTitle("Products")
     }
 }
 
