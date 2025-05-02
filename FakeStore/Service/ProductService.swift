@@ -7,8 +7,11 @@
 
 import Foundation
 
-class ProductService {
-    
+protocol ProductServiceProtocol {
+    func fetchProducts() async throws -> [Product]
+}
+
+class ProductService: ProductServiceProtocol {
     func fetchProducts() async throws -> [Product] {
         return Product.mockProducts
     }
