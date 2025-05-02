@@ -11,8 +11,17 @@ import Foundation
 class UsersViewModel {
     
     var users = [User]()
+    var service: UsersService
     
-    init() {
-        self.users = User.mockUsers
+    init(service: UsersService = UsersService()) {
+        self.service = service
+    }
+    
+    func fetchUsers() async {
+        do {
+            self.users = try await self.service.fetchUsers()
+        } catch {
+            //handel error
+        }
     }
 }

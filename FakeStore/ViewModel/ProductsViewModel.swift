@@ -15,7 +15,6 @@ class ProductsViewModel {
     
     init(service: ProductService = ProductService()) {
         self.service = service
-        self.products = Product.mockProducts
     }
     
     func fetchProducts() async {

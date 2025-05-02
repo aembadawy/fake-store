@@ -27,6 +27,9 @@ struct UsersView: View {
                 
             }
         }
+        .task {
+            await viewModel.fetchUsers()
+        }
     }
 }
 
