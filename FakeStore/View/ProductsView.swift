@@ -13,11 +13,19 @@ struct ProductsView: View {
     
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            switch viewModel.contentLoadingState {
+            case . loading:
                 ProgressView()
-            } else {
+            case .empty:
+                ContentUnavailableView(
+                    "No Products",
+                    systemImage: "cart.badge.questionmark"
+                )
+            case .error(let error):
+                Text(error.localizedDescription)
+            case .completed(let data):
                 List {
-                    ForEach(viewModel.products) { product in
+                    ForEach(data) { product in
                         HStack(spacing: 16) {
                             AsyncImage(url: URL(string: product.image))
                                 .aspectRatio(contentMode: .fill)
@@ -33,9 +41,7 @@ struct ProductsView: View {
                             }
                             .font(.subheadline)
                         }
-                        
                     }
-                    
                 }
             }
         }
