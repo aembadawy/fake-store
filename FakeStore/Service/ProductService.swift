@@ -12,8 +12,13 @@ protocol ProductServiceProtocol {
 }
 
 class ProductService: ProductServiceProtocol {
+    let urlString = "https://fakestoreapi.com/products"
+    
     func fetchProducts() async throws -> [Product] {
-        try await Task.sleep(for: .seconds(2))
-        return Product.mockProducts
+        guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        //validate response 
+        return try JSONDecoder().decode([Product].self, from: data)
     }
 }
