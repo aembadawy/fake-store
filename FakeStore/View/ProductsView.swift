@@ -12,27 +12,34 @@ struct ProductsView: View {
     @State private var viewModel = ProductsViewModel()
     
     var body: some View {
-        List {
-            ForEach(viewModel.products) { product in
-                HStack(spacing: 16) {
-                    AsyncImage(url: URL(string: product.image))
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .cornerRadius(10)
-                        .clipShape(.rect(cornerRadius: 10))
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else {
+                List {
+                    ForEach(viewModel.products) { product in
+                        HStack(spacing: 16) {
+                            AsyncImage(url: URL(string: product.image))
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 80, height: 80)
+                                .cornerRadius(10)
+                                .clipShape(.rect(cornerRadius: 10))
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(product.title)
-                        Text(product.description)
-                            .lineLimit(2)
-                            .foregroundStyle(.gray)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(product.title)
+                                Text(product.description)
+                                    .lineLimit(2)
+                                    .foregroundStyle(.gray)
+                            }
+                            .font(.subheadline)
+                        }
+                        
                     }
-                    .font(.subheadline)
+                    
                 }
-                
             }
-            
-        }.task {
+        }
+        .task {
             await viewModel.fetchProducts()
         }
     }

@@ -12,12 +12,15 @@ class ProductsViewModel {
     
     var products = [Product]()
     private let service: ProductServiceProtocol
+    var isLoading = false
     
     init(service: ProductServiceProtocol = ProductService()) {
         self.service = service
     }
     
     func fetchProducts() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             self.products = try await self.service.fetchProducts()
         } catch {
