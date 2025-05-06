@@ -18,8 +18,9 @@ struct ProductCache {
     // can also be written with the do catch approche
     //which is better since we don't have to proceed this func call with a try
     
-    func getProducts() throws -> [Product] {
-        guard let fileUrl = documentDirURL?.appending(path: fileName) else { return [] }
+    func getProducts() throws -> [Product]? {
+        guard let fileUrl = documentDirURL?.appending(path: fileName) else { return nil }
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return nil }
         let data = try Data(contentsOf: fileUrl)
         return try JSONDecoder().decode([Product].self, from: data)
     }

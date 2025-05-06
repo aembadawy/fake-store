@@ -12,16 +12,22 @@ protocol ProductServiceProtocol {
 }
 
 class ProductService: ProductServiceProtocol {
-    let urlString = "https://fakestoreapi.com/products"
+    private let urlString = "https://fakestoreapi.com/products"
+    private let cache = ProductCache()
     
     func fetchProducts() async throws -> [Product] {
+        if let cachedProducts = try cache.getProducts() {
+            return cachedProducts
+        }
         guard let url = URL(string: urlString) else {
             throw APIError.invalidURL
         }
         
         let (data, response) = try await URLSession.shared.data(from: url)
         try validateResponse(response)
-        return try JSONDecoder().decode([Product].self, from: data)
+        let products = try JSONDecoder().decode([Product].self, from: data)
+        cache.saveProducts(products)
+        return products
     }
     
     func validateResponse(_ response: URLResponse) throws {
