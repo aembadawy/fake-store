@@ -7,25 +7,20 @@
 
 import Foundation
 
-class UsersService {
+protocol UsersServiceProtocol {
+    func fetchUsers() async throws -> [User]
+}
+
+class UsersService: UsersServiceProtocol {
     
-    let urlString = "https://fakestoreapi.com/users"
+    private var downloader: HTTPDataDownloaderProtocol
+    
+    init(downloader: HTTPDataDownloaderProtocol = HTTPDataDownloader()) {
+        self.downloader = downloader
+    }
     
     func fetchUsers() async throws -> [User] {
-        guard let url = URL(string: urlString) else { throw URLError(.badURL) }
-        
-        let (data, response) = try await URLSession.shared.data(from: url)
-        try validateResponse(response)
-        return try JSONDecoder().decode([User].self, from: data)
+        return try await downloader.fetchData(as: User.self, from: .users)
     }
     
-    func validateResponse(_ response: URLResponse) throws {
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            throw URLError(.badServerResponse)
-        }
-    }
 }

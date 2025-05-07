@@ -8,15 +8,24 @@
 import SwiftUI
 
 struct UsersView: View {
+    
     @State private var viewModel = UsersViewModel()
     
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            switch viewModel.contentLoadingState {
+            case . loading:
                 ProgressView()
-            } else {
+            case .empty:
+                ContentUnavailableView(
+                    "No Users",
+                    systemImage: "person.slash"
+                )
+            case .error(let error):
+                Text(error.localizedDescription)
+            case .completed(let data):
                 List {
-                    ForEach(viewModel.users) { user in
+                    ForEach(data) { user in
                         HStack(spacing: 16) {
                             Text("\(user.id)")
                             VStack(alignment: .leading,

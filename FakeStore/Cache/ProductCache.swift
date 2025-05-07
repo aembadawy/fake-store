@@ -8,10 +8,7 @@
 import Foundation
 
 struct ProductCache {
-    let documentDirURL = FileManager.default.urls(
-        for: .documentDirectory,
-        in: .userDomainMask
-    ).first
+    let documentDirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     
     let fileName = "products.json"
     
@@ -19,6 +16,7 @@ struct ProductCache {
     //which is better since we don't have to proceed this func call with a try
     
     func getProducts() throws -> [Product]? {
+        
         guard let fileUrl = documentDirURL?.appending(path: fileName) else { return nil }
         guard FileManager.default.fileExists(atPath: fileUrl.path) else { return nil }
         let data = try Data(contentsOf: fileUrl)
