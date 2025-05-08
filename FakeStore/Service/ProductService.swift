@@ -13,7 +13,7 @@ protocol ProductServiceProtocol {
 
 class ProductService: ProductServiceProtocol {
     
-    private let cache = ProductCache()
+    private let cache = CacheManager(filename: "products.json")
     private let refreshIntervel: TimeInterval = 60 * 10 // 10 min
     private var lastFetchTime: Date?
     private var downloader: HTTPDataDownloaderProtocol
@@ -30,12 +30,12 @@ class ProductService: ProductServiceProtocol {
     
     func fetchProducts() async throws -> [Product] {
         //cache fetch
-        if !needsReferesh, let cachedProducts = try cache.getProducts() {
-            return cachedProducts
+        if !needsReferesh {
+            return try cache.getData(as: Product.self)
         }
         let products = try await downloader.fetchData(as: Product.self, from: .products)
         setLastFetchTime()
-        cache.saveProducts(products)
+        cache.saveData(products)
         return products
     }
     
