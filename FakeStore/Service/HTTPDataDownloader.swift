@@ -8,21 +8,45 @@
 import Foundation
 
 protocol HTTPDataDownloaderProtocol {
-    func fetchData<T: Codable>(as type: T.Type, from endpoint: FakeStoreAPIEndPoint) async throws -> [T]
+    func fetchData<T: Codable>(as type: T.Type) async throws -> [T]
 }
 
 struct HTTPDataDownloader: HTTPDataDownloaderProtocol {
     
-    let baseURL = "https://fakestoreapi.com"
+    private let baseURL = "https://fakestoreapi.com"
+    private let endpoint: FakeStoreAPIEndPoint
+    private let cache: CacheManager?
+    private let refreshIntervel: TimeInterval = 60 * 10 // 10 min
+    private var lastFetchTime: Date?
+    private let userDefultLastFetchTimeKey: String
     
-    func fetchData<T: Codable>(as type: T.Type, from endpoint: FakeStoreAPIEndPoint) async throws -> [T] {
-        let url = try buildURL(endpoint: endpoint)
-        let (data, response) = try await URLSession.shared.data(from: url)
-        try validateResponse(response)
-        return try JSONDecoder().decode([T].self, from: data)
+    init(endpoint: FakeStoreAPIEndPoint, cache: CacheManager? = nil) {
+        self.endpoint = endpoint
+        self.cache = cache
+        self.userDefultLastFetchTimeKey = endpoint.path
+        getLastFetchTime()
     }
     
-    private func buildURL(endpoint: FakeStoreAPIEndPoint) throws -> URL {
+    func fetchData<T: Codable>(as type: T.Type) async throws -> [T] {
+        
+        if !needsReferesh, let cache {
+            return try cache.getData(as: type)
+        }
+        
+        let url = try buildURL()
+        let (data, response) = try await URLSession.shared.data(from: url)
+        try validateResponse(response)
+        let result = try JSONDecoder().decode([T].self, from: data)
+        
+        if let cache {
+            setLastFetchTime()
+            cache.saveData(result)
+        }
+        
+        return result
+    }
+    
+    private func buildURL() throws -> URL {
         guard var components = URLComponents(string: baseURL) else {
             throw APIError.invalidURL
         }
@@ -30,7 +54,7 @@ struct HTTPDataDownloader: HTTPDataDownloaderProtocol {
         guard let url = components.url else { throw APIError.invalidURL }
         return url
     }
-
+    
     func validateResponse(_ response: URLResponse) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
@@ -39,6 +63,20 @@ struct HTTPDataDownloader: HTTPDataDownloaderProtocol {
         guard httpResponse.statusCode == 200 else {
             throw APIError.invalidResponse
         }
+    }
+    
+    private mutating func getLastFetchTime() {
+        lastFetchTime = UserDefaults.standard
+            .value(forKey: userDefultLastFetchTimeKey) as? Date
+    }
+    
+    private func setLastFetchTime() {
+        UserDefaults.standard.set(Date(), forKey: userDefultLastFetchTimeKey)
+    }
+    
+    private var needsReferesh: Bool {
+        guard let lastFetchTime else { return true }
+        return Date().timeIntervalSince(lastFetchTime) >= refreshIntervel
     }
 }
 

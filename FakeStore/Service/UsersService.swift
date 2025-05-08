@@ -15,12 +15,17 @@ class UsersService: UsersServiceProtocol {
     
     private var downloader: HTTPDataDownloaderProtocol
     
-    init(downloader: HTTPDataDownloaderProtocol = HTTPDataDownloader()) {
+    init(
+        downloader: HTTPDataDownloaderProtocol = HTTPDataDownloader(
+            endpoint: .users,
+            cache: CacheManager(filename: "user.json")
+        )
+    ) {
         self.downloader = downloader
     }
     
     func fetchUsers() async throws -> [User] {
-        return try await downloader.fetchData(as: User.self, from: .users)
+        return try await downloader.fetchData(as: User.self)
     }
     
 }
