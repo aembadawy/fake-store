@@ -9,6 +9,7 @@ import Foundation
 
 protocol UsersServiceProtocol {
     func fetchUsers() async throws -> [User]
+    func refreshUsers() async throws -> [User]
 }
 
 class UsersService: UsersServiceProtocol {
@@ -28,4 +29,7 @@ class UsersService: UsersServiceProtocol {
         return try await downloader.fetchData(as: User.self)
     }
     
+    func refreshUsers() async throws -> [User] {
+        return try await downloader.refreshData(as: User.self)
+    }
 }

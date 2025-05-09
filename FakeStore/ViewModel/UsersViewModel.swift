@@ -25,4 +25,13 @@ class UsersViewModel {
             contentLoadingState = .error(error: error)
         }
     }
+    
+    func refreshUsers() async {
+        do {
+            let users = try await self.service.refreshUsers()
+            contentLoadingState = users.isEmpty ? .empty : .completed(data: users)
+        } catch {
+            contentLoadingState = .error(error: error)
+        }
+    }
 }

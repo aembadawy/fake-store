@@ -48,10 +48,11 @@ struct ProductsView: View {
                     .searchable(text: $searchText, prompt: "Search here")
                 }
             }
+            .navigationTitle("Products")
+            .refreshable { await viewModel.refreshProducts() }
+            .task { await viewModel.fetchProducts() }
         }
-        .task {
-            await viewModel.fetchProducts()
-        }
+        
     }
 }
 

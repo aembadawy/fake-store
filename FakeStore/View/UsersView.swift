@@ -45,10 +45,11 @@ struct UsersView: View {
                     .searchable(text: $searchText, prompt: "Search here")
                 }
             }
+            .navigationTitle("Users")
+            .refreshable { await viewModel.refreshUsers() }
+            .task { await viewModel.fetchUsers() }
         }
-        .task {
-            await viewModel.fetchUsers()
-        }
+        
     }
 }
 
