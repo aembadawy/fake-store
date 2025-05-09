@@ -20,11 +20,15 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     private let refreshIntervel: TimeInterval = 60 * 10 // 10 min
     private var lastFetchTime: Date?
     private let userDefultLastFetchTimeKey: String
-    
+    private let urlBuilder: URLBuilder
+    private let responseValidator: HTTPResponseValidator
+
     init(endpoint: FakeStoreAPIEndPoint, cache: CacheManager? = nil) {
         self.endpoint = endpoint
         self.cache = cache
         self.userDefultLastFetchTimeKey = endpoint.path
+        self.urlBuilder = URLBuilder(baseURL: baseURL, endpoint: endpoint)
+        self.responseValidator = HTTPResponseValidator()
         getLastFetchTime()
     }
     
@@ -34,9 +38,9 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
             return try cache.getData(as: type)
         }
         
-        let url = try buildURL()
+        let url = try urlBuilder.buildURL()
         let (data, response) = try await URLSession.shared.data(from: url)
-        try validateResponse(response)
+        try responseValidator.validateResponse(response)
         let result = try JSONDecoder().decode([T].self, from: data)
         
         if let cache {
@@ -48,29 +52,9 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     }
     
     func refreshData<T: Codable>(as type: T.Type) async throws -> [T] {
-        print("Refresh Data")
         lastFetchTime = nil
         cache?.invalidate()
         return try await fetchData(as: type)
-    }
-    
-    private func buildURL() throws -> URL {
-        guard var components = URLComponents(string: baseURL) else {
-            throw APIError.invalidURL
-        }
-        components.path = endpoint.path
-        guard let url = components.url else { throw APIError.invalidURL }
-        return url
-    }
-    
-    func validateResponse(_ response: URLResponse) throws {
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.invalidResponse
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
     }
     
     private func getLastFetchTime() {
@@ -88,16 +72,3 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     }
 }
 
-enum FakeStoreAPIEndPoint {
-    case products
-    case users
-    
-    var path: String {
-        switch self {
-        case .products:
-            return "/products"
-        case .users:
-            return "/users"
-        }
-    }
-}
