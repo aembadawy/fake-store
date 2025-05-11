@@ -11,7 +11,8 @@ import Foundation
 class ProductsViewModel {
     
     private let service: ProductServiceProtocol
-    var contentLoadingState: ContentLoadingState<Product> = .loading
+    var products = [Product]()
+    var contentLoadingState: ContentLoadingState = .loading
     
     init(service: ProductServiceProtocol = ProductService()) {
         self.service = service
@@ -19,8 +20,8 @@ class ProductsViewModel {
     
     func fetchProducts() async {
         do {
-            let products = try await self.service.fetchProducts()
-            contentLoadingState = products.isEmpty ? .empty : .completed(data: products)
+            self.products = try await self.service.fetchProducts()
+            contentLoadingState = products.isEmpty ? .empty : .completed
         } catch {
             contentLoadingState = .error(error: error)
         }
@@ -28,8 +29,8 @@ class ProductsViewModel {
     
     func refreshProducts() async {
         do {
-            let products = try await self.service.refreshProducts()
-            contentLoadingState = products.isEmpty ? .empty : .completed(data: products)
+            self.products = try await self.service.refreshProducts()
+            contentLoadingState = products.isEmpty ? .empty : .completed
         } catch {
             contentLoadingState = .error(error: error)
         }

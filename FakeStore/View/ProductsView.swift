@@ -25,7 +25,7 @@ struct ProductsView: View {
                     )
                 case .error(let error):
                     Text(error.localizedDescription)
-                case .completed(let data):
+                case .completed:
                     List {
                         ForEach(filteredProducts) { product in
                             HStack(spacing: 16) {
@@ -59,15 +59,10 @@ struct ProductsView: View {
 extension ProductsView {
     
     var filteredProducts: [Product] {
-        
-        guard case .completed(let products) = viewModel.contentLoadingState else {
-            return []
-        }
-        
         if searchText.isEmpty {
-            return products
+            return viewModel.products
         } else {
-            return products.filter { product in
+            return viewModel.products.filter { product in
                 product.title.localizedCaseInsensitiveContains(searchText) ||
                 product.description.localizedCaseInsensitiveContains(searchText)
 

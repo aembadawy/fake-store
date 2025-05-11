@@ -25,7 +25,7 @@ struct UsersView: View {
                     )
                 case .error(let error):
                     Text(error.localizedDescription)
-                case .completed(let data):
+                case .completed:
                     List {
                         ForEach(filteredUsers) { user in
                             HStack(spacing: 16) {
@@ -56,12 +56,11 @@ struct UsersView: View {
 extension UsersView {
     
     var filteredUsers: [User] {
-        guard case .completed(let users) = viewModel.contentLoadingState else { return [] }
         
         if searchText.isEmpty {
-            return users
+            return viewModel.users
         } else {
-            return users.filter { user in
+            return viewModel.users.filter { user in
                 user.email.localizedCaseInsensitiveContains(searchText) ||
                 user.username.localizedCaseInsensitiveContains(searchText)
             }
